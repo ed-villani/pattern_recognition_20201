@@ -7,8 +7,9 @@ from commons.solver import solver
 
 
 def bayesian_classifier(points, classes, pdf, **kwargs):
-    n_per_classes = [len(c.T) for c in classes]
+    n_per_classes = np.array([len(c.T) for c in classes])
     total = sum(n_per_classes)
+    n_per_classes = n_per_classes / total
     pdfs_values = []
     for index, c in enumerate(classes):
         pdfs_values.append([])

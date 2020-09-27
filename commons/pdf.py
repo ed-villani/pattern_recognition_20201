@@ -30,7 +30,10 @@ class GaussianPDF:
         return np.exp(mul1_exp * mul2_exp) / div
 
     @staticmethod
-    def pdf(n, K, x, m):
+    def pdf(x, d):
+        K = np.cov(d)
+        m = np.mean(d, axis=1)
+        n = K.shape[0]
         multiplier = 10 ** 16
         divider = multiplier ** K.shape[0]
         d = (1 / np.sqrt(Decimal(((2 * np.pi) ** n)) * Decimal(det(K * multiplier)) / Decimal(divider)))

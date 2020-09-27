@@ -16,7 +16,7 @@ def main():
     N = (200, 2)
     grid = np.arange(0.06, 6, 0.06)
     classification = [0, 1]
-    ylim= (-1, 6)
+    ylim = (-1, 6)
     xlim = (-1, 6)
     data = [gen_data(mu, sigma, N, c) for mu, sigma, c in zip(mus, sigmas, classification)]
     scatter_plot(data=data, ylim=ylim, xlim=xlim)
