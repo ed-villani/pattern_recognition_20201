@@ -28,7 +28,7 @@ def kde(data, h):
 
 
 def main():
-    spiral = Spiral('ex7.txt')
+    spiral = Spiral('data/spiral.txt')
     data = np.insert(spiral.points, 0, spiral.classification, axis=1)
     shuffle(data)
     data = data[:, 1:]

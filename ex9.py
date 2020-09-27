@@ -99,7 +99,7 @@ def solver(data, grid):
 
 def main():
     np.warnings.filterwarnings('error', category=np.VisibleDeprecationWarning)
-    spiral = Spiral('ex7.txt')
+    spiral = Spiral('data/spiral.txt')
     kf = KFold(n_splits=10)
     K = 30
     colors = random_colors(K + 1)

@@ -1,6 +1,13 @@
+from random import random
+
 import numpy as np
 import pandas as pd
 from numpy.random.mtrand import shuffle, normal
+
+
+def random_colors(number_of_colors):
+    return ["#" + ''.join([random.choice('0123456789ABCDEF') for _ in range(6)])
+            for _ in range(number_of_colors)]
 
 
 def save_to_csv(filename, data):

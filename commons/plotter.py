@@ -37,8 +37,11 @@ def contour_plot(x, y, z, color_bar=False):
 
 def scatter_plot(data, **kwargs):
     fig, ax = plt.subplots()
-    for d in data:
-        ax.scatter(d[0], d[1], alpha=0.3, edgecolors='none')
+    for index, d in enumerate(data):
+        if kwargs.get('colors') is None:
+            ax.scatter(d[0], d[1], alpha=0.3, edgecolors='none')
+        else:
+            ax.scatter(d[0], d[1], alpha=0.3, edgecolors='none', c = kwargs['colors'][index])
         ax.legend()
         ax.grid(True)
 

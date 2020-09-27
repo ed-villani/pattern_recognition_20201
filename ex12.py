@@ -44,7 +44,7 @@ def solver(grid, data):
 
 def main():
     warnings.filterwarnings("ignore", category=DeprecationWarning)
-    spiral = Spiral('ex7.txt')
+    spiral = Spiral('data/spiral.txt')
 
     X_train, X_test, y_train, y_test = train_test_split(spiral.data, spiral.classification, test_size=0.1,
                                                         random_state=1)
