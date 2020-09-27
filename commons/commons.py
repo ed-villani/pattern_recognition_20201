@@ -1,4 +1,4 @@
-from random import random
+from random import choice
 
 import numpy as np
 import pandas as pd
@@ -6,7 +6,7 @@ from numpy.random.mtrand import shuffle, normal
 
 
 def random_colors(number_of_colors):
-    return ["#" + ''.join([random.choice('0123456789ABCDEF') for _ in range(6)])
+    return ["#" + ''.join([choice('0123456789ABCDEF') for _ in range(6)])
             for _ in range(number_of_colors)]
 
 

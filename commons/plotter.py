@@ -41,7 +41,7 @@ def scatter_plot(data, **kwargs):
         if kwargs.get('colors') is None:
             ax.scatter(d[0], d[1], alpha=0.3, edgecolors='none')
         else:
-            ax.scatter(d[0], d[1], alpha=0.3, edgecolors='none', c = kwargs['colors'][index])
+            ax.scatter(d[0], d[1], alpha=0.3, edgecolors='none', c=kwargs['colors'][index])
         ax.legend()
         ax.grid(True)
 
