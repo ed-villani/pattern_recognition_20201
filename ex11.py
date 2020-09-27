@@ -3,9 +3,11 @@ from datetime import datetime
 import numpy as np
 from sklearn.model_selection import KFold
 
-from commons.classifiers import get_data_for_classification, bayesian_classifier
+from commons.classifiers import get_data_for_classification, bayesian_classifier, data_frontier
 from commons.commons import calculate_accuracy_percentage, save_to_csv
 from commons.pdf import PDF, PDFTypes
+from commons.plotter import frontier_plot
+from commons.solver import solver
 from ex9_1 import Spiral
 
 
@@ -17,10 +19,11 @@ def main():
 
     h_base = PDF.kde_spread(points)
     step = h_base / (n_tests - 1)
-    all_h = [(h_base * 1.5) - (step * i) for i in range(n_tests)]
+    all_h = [h_base]
     better_h = None
     better_accuracy = 0
     accuracies_list = []
+    grid = np.arange(-2, 2, 0.02)
     i = 0
     for h in all_h:
         for train_index, test_index in KFold(n_splits=n_splits).split(points):
@@ -35,7 +38,7 @@ def main():
             bayesian_classification = bayesian_classifier(
                 points_test,
                 data_classified,
-                GaussianPDF(PDFTypes.KDE),
+                PDF(PDFTypes.KDE),
                 h=h
             )
 
@@ -59,6 +62,19 @@ def main():
                     (better_class_train, better_class_test))
 
     save_to_csv('/Users/eduardovillani/git/pattern_recognition_20201/data/ex_11.csv', accuracies_list)
+
+    data_classified = get_data_for_classification(better_classification, better_points)
+    classifiers = np.array([
+        solver(
+            grid,
+            PDF(PDFTypes.KDE),
+            d=d,
+            h=better_h
+        ) for index, d in enumerate(data_classified)
+    ])
+
+    frontier = data_frontier(data_classified, grid, PDF(PDFTypes.MIXTURE), solution=classifiers)
+    frontier_plot(data_classified, grid, grid, frontier)
 
 
 if __name__ == '__main__':

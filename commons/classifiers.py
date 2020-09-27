@@ -44,7 +44,7 @@ def bayesian_classifier(points, classes, pdf, type='simple', **kwargs):
 def simple_classifier(points, classes):
     c = [
         np.argmax([
-            GaussianPDF(PDFTypes.TWO_VAR)(
+            PDF(PDFTypes.TWO_VAR)(
                 x=p,
                 d=d,
                 p=0

@@ -70,29 +70,14 @@ class PDF:
         def constant(data, h):
             N = data.shape[0]
             n = data.shape[1]
-            return 1 / (n * ((np.sqrt(2 * np.pi) * h) ** N))
+            return 1 / (n * (((2 * np.pi) * (1 / 2) * h) ** N))
 
-        def kde_exp(p, xi):
-            upper = (p - xi) ** 2
+        def kde_exp(p, d):
+            upper = (p - d.T) ** 2
             lower = 2 * h ** 2
-            return np.prod(np.exp(-(upper / lower)))
+            return np.exp(-(upper / lower))
 
         def summation_kde(p):
-            return constant(d, h) * sum([kde_exp(p, xi) for xi in d.T])
+            return constant(d, h) * kde_exp(p, d).prod(axis=1).sum()
 
         return summation_kde(x)
-
-    # @staticmethod
-    # def generate_kde_pdf(x, d, h=None):
-    #     total_samples = d.shape[0]
-    #     dimensions = d.shape[1]
-    #     if h is None:
-    #         h = max(1.06 * d.std() * total_samples ** (-1 / 5), 0.00001)
-    #     multiplier = 1 / (total_samples * (((2 * np.pi) * (1 / 2) * h) * dimensions))
-    #
-    #     def pdf(*x):
-    #         x_array = np.array(x)
-    #         all_terms = np.e * -(((x_array - d.T) * 2) / (2 * h ** 2))
-    #         return multiplier * all_terms.prod(axis=1).sum()
-    #
-    #     return pdf(x)
