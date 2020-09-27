@@ -31,11 +31,14 @@ class GaussianPDF:
 
     @staticmethod
     def pdf(x, d):
+        def calc_det():
+            multiplier = 10 ** 16
+            divider = multiplier ** K.shape[0]
+            return Decimal(det(K * multiplier)) / Decimal(divider)
+
         K = np.cov(d)
         m = np.mean(d, axis=1)
         n = K.shape[0]
-        multiplier = 10 ** 16
-        divider = multiplier ** K.shape[0]
-        d = (1 / np.sqrt(Decimal(((2 * np.pi) ** n)) * Decimal(det(K * multiplier)) / Decimal(divider)))
+        d = (1 / np.sqrt(Decimal(((2 * np.pi) ** n)) * calc_det()))
         e = Decimal(np.exp(-(0.5 * ((x - m) @ pinv(K)) @ (x - m))))
         return float(d * e)

@@ -1,5 +1,22 @@
 import numpy as np
+import pandas as pd
 from numpy.random.mtrand import shuffle, normal
+
+
+def save_to_csv(filename, data):
+    df = pd.DataFrame(data)
+    # csv_data = df.to_csv(index=False)
+    df.to_csv(filename, index=False, mode='a+', header=False)
+
+
+def read_heart():
+    datContent = [i.strip().split() for i in open("data/heart.dat").readlines()]
+    for dat in datContent:
+        for index, i in enumerate(dat):
+            dat[index] = float(i)
+    datContent = np.array(datContent)
+    datContent[:, -1] = datContent[:, -1] - 1
+    return datContent
 
 
 def join_classification(X_train, y_train, X_test, classification):
