@@ -6,7 +6,7 @@ import logging
 logging.getLogger().setLevel(logging.CRITICAL)
 
 
-def frontier_plot(data, x, y, frontier):
+def frontier_plot(data, x, y, frontier, **kwargs):
     fig, ax = plt.subplots()
     for d in data:
         ax.scatter(d[0], d[1], alpha=0.3, edgecolors='none')
@@ -14,6 +14,12 @@ def frontier_plot(data, x, y, frontier):
         ax.grid(True)
     X, Y = np.meshgrid(x, y)
     ax.contour(Y, X, frontier)
+
+    if kwargs.get('xlim') is not None:
+        plt.xlim(*kwargs['xlim'])
+    if kwargs.get('ylim') is not None:
+        plt.ylim(*kwargs['ylim'])
+
     plt.show()
 
 
@@ -29,12 +35,18 @@ def contour_plot(x, y, z, color_bar=False):
     plt.show()
 
 
-def scatter_plot(data):
+def scatter_plot(data, **kwargs):
     fig, ax = plt.subplots()
     for d in data:
         ax.scatter(d[0], d[1], alpha=0.3, edgecolors='none')
         ax.legend()
         ax.grid(True)
+
+    if kwargs.get('xlim') is not None:
+        plt.xlim(*kwargs['xlim'])
+    if kwargs.get('ylim') is not None:
+        plt.ylim(*kwargs['ylim'])
+
     plt.show()
 
 

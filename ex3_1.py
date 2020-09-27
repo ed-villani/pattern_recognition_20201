@@ -1,83 +1,43 @@
-from copy import deepcopy
-from math import sqrt
 import numpy as np
-from numpy import ones, cov, concatenate, vstack, corrcoef, pi
-from numpy.linalg import det
-from numpy.ma import arange, exp
-from numpy.random.mtrand import dirichlet
-import matplotlib.pyplot as plt
-from random_data import RandomData, pdf, data_frontier
+from sklearn.model_selection import train_test_split
 
-
-def scatter_plot(random_data, frontier=False):
-    fig, ax = plt.subplots()
-    for d in random_data:
-        ax.scatter(d[0], d[1], alpha=0.3, edgecolors='none')
-        ax.legend()
-        ax.grid(True)
-    if frontier:
-        X, Y = np.meshgrid(frontier['grid_x'], frontier['grid_y'])
-        ax.contour(Y, X, frontier['frontier'])
-    plt.show()
-
-
-def classifier(data, classes):
-    all_data = deepcopy(data)
-    all_data = concatenate(tuple(d for d in all_data), 1).T
-
-    def pdf_k(n, K, x, m):
-        d = 1 / sqrt((2 * pi) ** n * det(K))
-        e = exp(0.5 * (x - m).T * K ** -1 * (x - m))
-        return d * e
-
-    # pc = probability_per_class(data)
-    for d in all_data:
-        pdfs = [
-            pdf(
-                s1=c.attr_sd_training[0],
-                s2=c.attr_sd_training[1],
-                p=corrcoef(c.traning_data)[0][1],
-                u1=c.attr_mean_training[0],
-                x=d[0],
-                y=d[1],
-                u2=c.attr_mean_training[1]
-            ) for c in classes
-        ]
-
-        classes[pdfs.index(max(pdfs))].traning_data = vstack([classes[pdfs.index(max(pdfs))].traning_data.T, d]).T
-        classes[pdfs.index(max(pdfs))].classifier += 1
-    return
+from commons.classifiers import bayesian_classifier, get_data_for_classification, data_frontier
+from commons.commons import join_data, gen_data, calculate_accuracy_percentage, join_classification
+from commons.pdf import GaussianPDF, GaussianPDFTypes
+from commons.plotter import scatter_plot, frontier_plot
 
 
 def main():
-    training_percentage = 0.9
-    x = dirichlet(ones(2), 1)[0] * training_percentage
-    grid = arange(0.06, 6, 0.06)
-    N = 200
-    sds = [0.8, 0.4]
-    means = [[2, 2], [4, 4]]
-    data = [RandomData(N, sd, mean, arange(0.06, 6, 0.06), split=p) for sd, mean, p in zip(sds, means, x)]
-    training = [d.traning_data for d in data]
-    # scatter_plot(training)
-    training.append(concatenate(tuple(d.random_data for d in data), 1))
-    # scatter_plot(training)
-    classifier([d.random_data for d in data], data)
-    for d in data:
-        d.random_data = d.traning_data
-    frontier = {
-        'grid_x': grid,
-        'grid_y': grid,
-        'frontier': data_frontier(data, grid)
-    }
-    scatter_plot([d.random_data for d in data], frontier)
+    mus = [
+        [2, 2],
+        [4, 4]
+    ]
+    sigmas = [0.8, 0.4]
+    N = (200, 2)
+    grid = np.arange(0.06, 6, 0.06)
+    classification = [0, 1]
+    ylim= (-1, 6)
+    xlim = (-1, 6)
+    data = [gen_data(mu, sigma, N, c) for mu, sigma, c in zip(mus, sigmas, classification)]
+    scatter_plot(data=data, ylim=ylim, xlim=xlim)
 
+    points = join_data(data)
+    X_train, X_test, y_train, y_test = train_test_split(points[:, :-1], points[:, -1], train_size=0.9)
 
-def probability_per_class(data):
-    p_c = []
-    total = sum([data.shape[1] for data in data])
-    for data in data:
-        p_c.append((data.shape[1] / total))
-    return p_c
+    X_train_per_class = get_data_for_classification(y_train, X_train)
+    scatter_plot(data=X_train_per_class, ylim=ylim, xlim=xlim)
+    scatter_plot(data=X_test, ylim=ylim, xlim=xlim)
+
+    classification = bayesian_classifier(
+        X_test, X_train_per_class, GaussianPDF(GaussianPDFTypes.TWO_VAR), p=0
+    )
+    calculate_accuracy_percentage(y_test, classification)
+
+    data_classified = get_data_for_classification(*join_classification(X_train, y_train, X_test, classification))
+    scatter_plot(data=data_classified, ylim=ylim, xlim=xlim)
+
+    frontier = data_frontier(data_classified, grid, GaussianPDF(GaussianPDFTypes.TWO_VAR), p=0)
+    frontier_plot(data, grid, grid, frontier, ylim=ylim, xlim=xlim)
 
 
 if __name__ == '__main__':

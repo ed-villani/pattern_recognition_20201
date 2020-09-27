@@ -2,6 +2,7 @@ import numpy as np
 from numpy.random.mtrand import normal
 
 from commons.classifiers import simple_classifier, get_data_for_classification, data_frontier
+from commons.commons import join_data
 from commons.pdf import GaussianPDF, GaussianPDFTypes
 from commons.plotter import scatter_plot, surface_plot, frontier_plot
 from commons.solver import solver
@@ -32,7 +33,7 @@ def main():
     ])
 
     surface_plot(grid, grid, classifiers, z_limit=(0, 0.35))
-    points = np.concatenate([d.T for d in data])
+    points = join_data(data)
     classes = simple_classifier(points, data)
 
     data_classified = get_data_for_classification(classes, points)

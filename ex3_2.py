@@ -3,7 +3,7 @@ from numpy import ones, concatenate, meshgrid, cov, mean, array
 from numpy.ma import arange
 from numpy.random.mtrand import dirichlet
 
-from ex3_1_new import data, pdf_2, data_frontier
+from ex3_1 import data, pdf_2, data_frontier
 
 
 def scatter_plot(random_data, label, frontier=False):

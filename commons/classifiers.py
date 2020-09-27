@@ -6,6 +6,31 @@ from commons.pdf import GaussianPDF, GaussianPDFTypes
 from commons.solver import solver
 
 
+def bayesian_classifier(points, classes, pdf, **kwargs):
+    n_per_classes = [len(c.T) for c in classes]
+    total = sum(n_per_classes)
+    pdfs_values = []
+    for index, c in enumerate(classes):
+        pdfs_values.append([])
+        for p in points:
+            pdfs_values[index].append(
+                pdf(
+                    x=p,
+                    d=c,
+                    **kwargs
+                )
+            )
+
+    classification = []
+    for index in range(len(points)):
+        k = (pdfs_values[0][index] * n_per_classes[0]) / (pdfs_values[1][index] * n_per_classes[1])
+        if k > 1:
+            classification.append(0)
+        else:
+            classification.append(1)
+    return np.array(classification)
+
+
 def simple_classifier(points, classes):
     c = [
         np.argmax([

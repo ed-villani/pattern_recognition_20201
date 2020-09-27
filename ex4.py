@@ -3,7 +3,7 @@ from random import sample
 
 from numpy import mean, array, cov, concatenate
 
-from ex3_1_new import pdf_2
+from ex3_1 import pdf_2
 
 
 def main():
