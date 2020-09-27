@@ -1,79 +1,32 @@
-from random import sample
+from datetime import datetime
+from decimal import DivisionByZero
 
-from numpy import mean, array, cov, concatenate
+from sklearn.model_selection import train_test_split
 
-from ex3_1 import pdf_2
+from commons.classifiers import get_data_for_classification, bayesian_classifier
+from commons.commons import calculate_accuracy_percentage, save_to_csv, read_spambase
+from commons.pdf import GaussianPDF, GaussianPDFTypes
 
 
 def main():
-    percentage_training = 0.9
-    datContent = [i.strip().split(',') for i in open("spambase.data").readlines()]
-    for dat in datContent:
-        for index, i in enumerate(dat):
-            dat[index] = float(i)
-    datContent = array(datContent)
-    k = sample(range(len(datContent)), k=int(len(datContent) * percentage_training))
-    data_traning = datContent[k].tolist()
-    data = [d for index, d in enumerate(datContent.tolist()) if index not in k]
-    data = array(data)
-    data_traning = array(data_traning)
-
-    c1_training = []
-    c2_training = []
-    for d in data_traning:
-        if d[-1] == 1:
-            c1_training.append(d[:-1])
-        else:
-            c2_training.append(d[:-1])
-
-    c1_training = array(c1_training)
-    c2_training = array(c2_training)
-
-    c1_random = []
-    c2_random = []
-    for d in data:
-        if d[-1] == 1:
-            c1_random.append(d[:-1])
-        else:
-            c2_random.append(d[:-1])
-
-    c1_random = array(c1_random)
-    c2_random = array(c2_random)
-    data_con = concatenate((c1_random, c2_random))
-    pdf_c1 = [
-        pdf_2(c1_training.shape[1], cov(c1_training.T), d, mean(c1_training.T, axis=1)) for d in data_con
-    ]
-    pdf_c2 = [
-        pdf_2(c1_training.shape[1], cov(c2_training.T), d, mean(c2_training.T, axis=1)) for d in data_con
-    ]
-
-    total = concatenate((c1_training, c2_training)).shape[0]
-    n_c1 = c1_training.shape[0] / total
-    n_c2 = 1 - n_c1
-    i = 0
-    final_c1 = []
-    final_c2 = []
-
-    for x, y, d in zip(pdf_c1, pdf_c2, data_con):
-        k = (x * n_c1) / (y * n_c2)
-        if k < 1:
-            final_c1.append(d)
-        else:
-            final_c2.append(d)
-    final_c1 = array(final_c1)
-    final_c2 = array(final_c2)
-
-
-    print(f"Expected C1 (Spam): {c1_random.T.shape[1]} - Result C1: {final_c1.shape[0]}")
-    print(f"Expected C2 (Not Spam): {c2_random.T.shape[1]} - Result C2: {final_c2.shape[0]}")
-    print(f"Error: {abs(((final_c1.shape[0] - c1_random.T.shape[1]) / (c1_random.T.shape[1] + c2_random.T.shape[1])) * 100)}%\n")
-
-
-def iterar():
-    for i in range(1):
-        print(i)
-        main()
+    K = 10
+    train_size = [0.9]
+    accuracies_list = []
+    for train in train_size:
+        data = read_spambase()
+        for i in range(K):
+            try:
+                X_train, X_test, y_train, y_test = train_test_split(data[:, :-1], data[:, -1], train_size=train)
+                X_train_per_class = get_data_for_classification(y_train, X_train)
+                classification = bayesian_classifier(
+                    X_test, X_train_per_class, GaussianPDF(GaussianPDFTypes.MULTI_VAR)
+                )
+                accuracy = calculate_accuracy_percentage(y_test, classification)
+                accuracies_list.append([i, round(accuracy, 4), train, datetime.now().strftime("%Y/%m/%dT%H:%M:%S")])
+            except DivisionByZero:
+                pass
+    save_to_csv('/Users/eduardovillani/git/pattern_recognition_20201/data/ex_5.csv', accuracies_list)
 
 
 if __name__ == '__main__':
-    iterar()
+    main()

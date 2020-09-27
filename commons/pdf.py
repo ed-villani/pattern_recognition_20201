@@ -1,3 +1,4 @@
+import warnings
 from dataclasses import dataclass
 from decimal import Decimal
 
@@ -25,12 +26,15 @@ class GaussianPDF:
         s = np.std(d, axis=1)
         u = np.mean(d, axis=1)
         mul1_exp = -1 / (2 * (1 - p ** 2))
-        mul2_exp = (x[0] - u[0]) ** 2 / s[0] ** 2 + (x[1] - u[1]) ** 2 / s[1] ** 2 - 2 * p * (x[0] - u[0]) * (x[1] - u[1]) / (s[0] * s[1])
+        mul2_exp = (x[0] - u[0]) ** 2 / s[0] ** 2 + (x[1] - u[1]) ** 2 / s[1] ** 2 - 2 * p * (x[0] - u[0]) * (
+                    x[1] - u[1]) / (s[0] * s[1])
         div = 2 * np.pi * s[0] * s[1] * np.sqrt(1 - p ** 2)
         return np.exp(mul1_exp * mul2_exp) / div
 
     @staticmethod
     def pdf(x, d):
+        warnings.filterwarnings("ignore", category=RuntimeWarning)
+
         def calc_det():
             multiplier = 10 ** 16
             divider = multiplier ** K.shape[0]

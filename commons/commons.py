@@ -7,6 +7,16 @@ def save_to_csv(filename, data):
     df = pd.DataFrame(data)
     # csv_data = df.to_csv(index=False)
     df.to_csv(filename, index=False, mode='a+', header=False)
+    print(f'Saving Data to CSV, file {filename}')
+
+
+def read_spambase():
+    datContent = [i.strip().split(',') for i in open("data/spambase.data").readlines()]
+    for dat in datContent:
+        for index, i in enumerate(dat):
+            dat[index] = float(i)
+    datContent = np.array(datContent)
+    return datContent
 
 
 def read_heart():
