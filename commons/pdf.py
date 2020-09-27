@@ -10,6 +10,7 @@ from numpy.linalg import pinv, det
 class GaussianPDFTypes:
     MULTI_VAR = 'multi-var'
     TWO_VAR = 'two-var'
+    MIXTURE = 'MIXTURE'
 
 
 class GaussianPDF:
@@ -18,6 +19,8 @@ class GaussianPDF:
             return GaussianPDF.pdf
         elif type == GaussianPDFTypes.TWO_VAR:
             return GaussianPDF.pdf_2_var
+        elif type == GaussianPDFTypes.MIXTURE:
+            return GaussianPDF.gaussian_mixture
         else:
             raise Exception
 
@@ -27,7 +30,7 @@ class GaussianPDF:
         u = np.mean(d, axis=1)
         mul1_exp = -1 / (2 * (1 - p ** 2))
         mul2_exp = (x[0] - u[0]) ** 2 / s[0] ** 2 + (x[1] - u[1]) ** 2 / s[1] ** 2 - 2 * p * (x[0] - u[0]) * (
-                    x[1] - u[1]) / (s[0] * s[1])
+                x[1] - u[1]) / (s[0] * s[1])
         div = 2 * np.pi * s[0] * s[1] * np.sqrt(1 - p ** 2)
         return np.exp(mul1_exp * mul2_exp) / div
 
@@ -36,7 +39,7 @@ class GaussianPDF:
         warnings.filterwarnings("ignore", category=RuntimeWarning)
 
         def calc_det():
-            multiplier = 10 ** 16
+            multiplier = 10 ** 19
             divider = multiplier ** K.shape[0]
             return Decimal(det(K * multiplier)) / Decimal(divider)
 
@@ -46,3 +49,7 @@ class GaussianPDF:
         d = (1 / np.sqrt(Decimal(((2 * np.pi) ** n)) * calc_det()))
         e = Decimal(np.exp(-(0.5 * ((x - m) @ pinv(K)) @ (x - m))))
         return float(d * e)
+
+    @staticmethod
+    def gaussian_mixture(x, d):
+        return sum([GaussianPDF.pdf(x, data) for data in d])

@@ -2,6 +2,8 @@ import numpy as np
 
 
 def solver(grid, pdf, **kwargs):
+    print(f'Calculating Solver')
+
     x = grid
     y = grid
 

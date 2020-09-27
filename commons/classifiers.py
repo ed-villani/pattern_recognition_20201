@@ -6,10 +6,19 @@ from commons.pdf import GaussianPDF, GaussianPDFTypes
 from commons.solver import solver
 
 
-def bayesian_classifier(points, classes, pdf, **kwargs):
-    n_per_classes = np.array([len(c.T) for c in classes])
-    total = sum(n_per_classes)
-    n_per_classes = n_per_classes / total
+def bayesian_classifier(points, classes, pdf, type='simple', **kwargs):
+    def prior_probability():
+        n = None
+        if type == 'simple':
+            n = np.array([len(c.T) for c in classes])
+        elif type == 'mix':
+            n = np.array([sum([c.shape[1] for c in k]) for k in classes])
+        total = sum(n)
+        n = n / total
+        return n
+
+    n_per_classes = prior_probability()
+
     pdfs_values = []
     for index, c in enumerate(classes):
         pdfs_values.append([])
@@ -49,6 +58,18 @@ def get_data_for_classification(classification, data):
     return [
         data[np.where(classification == index)].T for index, c in enumerate(set(classification))
     ]
+
+
+def fuzzy_class_by_inner_class(fkm, data):
+    from commons.fkm import FuzzyKMeans
+    aux = [
+        get_data_for_classification(FuzzyKMeans.normalize_membership_matrix(f[0]), c.T) for f, c in zip(fkm, data)
+    ]
+    for a in aux:
+        for index, k in enumerate(a):
+            if not k.shape[1]:
+                a.pop(index)
+    return aux
 
 
 def data_frontier(data, grid, pdf, **kwargs):
