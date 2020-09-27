@@ -21,10 +21,12 @@ class GaussianPDF:
             raise Exception
 
     @staticmethod
-    def pdf_2_var(s1, s2, p, x, u1, u2):
+    def pdf_2_var(d, p, x):
+        s = np.std(d, axis=1)
+        u = np.mean(d, axis=1)
         mul1_exp = -1 / (2 * (1 - p ** 2))
-        mul2_exp = (x[0] - u1) ** 2 / s1 ** 2 + (x[1] - u2) ** 2 / s2 ** 2 - 2 * p * (x[0] - u1) * (x[1] - u2) / (s1 * s2)
-        div = 2 * np.pi * s1 * s2 * np.sqrt(1 - p ** 2)
+        mul2_exp = (x[0] - u[0]) ** 2 / s[0] ** 2 + (x[1] - u[1]) ** 2 / s[1] ** 2 - 2 * p * (x[0] - u[0]) * (x[1] - u[1]) / (s[0] * s[1])
+        div = 2 * np.pi * s[0] * s[1] * np.sqrt(1 - p ** 2)
         return np.exp(mul1_exp * mul2_exp) / div
 
     @staticmethod

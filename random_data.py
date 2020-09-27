@@ -65,10 +65,10 @@ def data_frontier(random_data, grid):
     y = grid
 
     m = zeros((len(x), len(y)))
-    solver = [data.solver for data in random_data]
+    solver_k = [data.solver() for data in random_data]
     for i, x_i in enumerate(x):
         for j, y_i in enumerate(y):
-            values_list = [s[i][j] for s in solver]
+            values_list = [s[i][j] for s in solver_k]
             m[i][j] = values_list.index(max(values_list))
     return m
 

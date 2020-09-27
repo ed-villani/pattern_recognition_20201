@@ -1,27 +1,44 @@
-from numpy.ma import arange
+import numpy as np
+from numpy.random.mtrand import normal
 
-from random_data import RandomData, RandomDataPlotter, data_frontier
+from commons.classifiers import simple_classifier, get_data_for_classification, data_frontier
+from commons.pdf import GaussianPDF, GaussianPDFTypes
+from commons.plotter import scatter_plot, surface_plot, frontier_plot
+from commons.solver import solver
 
 
 def main():
-    grid = arange(0.06, 6, 0.06)
+    mus = [
+        [2, 2],
+        [4, 4],
+        [2, 4],
+        [4, 2]
+    ]
+    sigmas = [0.6, 0.8, 0.2, 1]
+    N = (100, 2)
+    grid = np.arange(0.06, 6, 0.06)
 
-    d1 = RandomData(100, 0.6, [2, 2], grid)
-    d2 = RandomData(100, 0.8, [4, 4], grid)
-    d3 = RandomData(100, 0.2, [2, 4], grid)
-    d4 = RandomData(100, 1, [4, 2], grid)
+    data = [normal(mu, sigma, size=N).T for mu, sigma in zip(mus, sigmas)]
 
-    RandomDataPlotter.scatter_plot([d4, d3, d2, d1])
-    RandomDataPlotter.surface_plot([d4, d3, d2, d1])
-    # for d in [d4, d3, d2, d1]:
-    #     RandomDataPlotter.surface_plot([d])
-    RandomDataPlotter.contour_plot([d4, d3, d2, d1])
-    frontier = {
-        'grid_x': grid,
-        'grid_y': grid,
-        'frontier': data_frontier([d4, d3, d2, d1], grid)
-    }
-    RandomDataPlotter.scatter_plot([d4, d3, d2, d1], frontier)
+    scatter_plot(data=data)
+
+    classifiers = np.array([
+        solver(
+            grid,
+            GaussianPDF(GaussianPDFTypes.TWO_VAR),
+            d=d,
+            p=0
+        ) for index, d in enumerate(data)
+    ])
+
+    surface_plot(grid, grid, classifiers, z_limit=(0, 0.35))
+    points = np.concatenate([d.T for d in data])
+    classes = simple_classifier(points, data)
+
+    data_classified = get_data_for_classification(classes, points)
+    scatter_plot(data=data_classified)
+    frontier = data_frontier(data_classified, grid, GaussianPDF(GaussianPDFTypes.TWO_VAR), p=0)
+    frontier_plot(data, grid, grid, frontier)
 
 
 if __name__ == '__main__':
