@@ -20,7 +20,8 @@ def main():
     ylim = (-1.1, 1.1)
     xlim = (-1.1, 1.1)
     grid = np.arange(-1, 1, 0.02)
-    points, classification = Spiral().points, Spiral().classification
+    spiral = Spiral()
+    points, classification = spiral.points, spiral.classification
     better_accuracy = 0
     accuracies_list = []
     i = 0

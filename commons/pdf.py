@@ -10,7 +10,8 @@ from numpy.linalg import pinv, det
 class GaussianPDFTypes:
     MULTI_VAR = 'multi-var'
     TWO_VAR = 'two-var'
-    MIXTURE = 'MIXTURE'
+    MIXTURE = 'mixture'
+    KDE = 'kde'
 
 
 class GaussianPDF:
@@ -21,6 +22,8 @@ class GaussianPDF:
             return GaussianPDF.pdf_2_var
         elif type == GaussianPDFTypes.MIXTURE:
             return GaussianPDF.gaussian_mixture
+        elif type == 'kde':
+            return GaussianPDF.kde
         else:
             raise Exception
 
@@ -53,3 +56,26 @@ class GaussianPDF:
     @staticmethod
     def gaussian_mixture(x, d):
         return sum([GaussianPDF.pdf(x, data) for data in d])
+
+    @staticmethod
+    def kde_spread(data):
+        return max(1.06 * np.std(data, axis=0) * data.shape[0] ** (-1 / 5))
+
+    @staticmethod
+    def kde(x, d, h):
+        warnings.filterwarnings("ignore", category=RuntimeWarning)
+
+        def constant(data, h):
+            N = data.shape[0]
+            n = data.shape[1]
+            return 1 / (n * ((np.sqrt(2 * np.pi) * h) ** N))
+
+        def kde_exp(p, xi):
+            upper = (p - xi) ** 2
+            lower = 2 * h ** 2
+            return np.prod(np.exp(-(upper / lower)))
+
+        def summation_kde(p):
+            return constant(d, h) * sum([kde_exp(p, xi) for xi in d.T])
+
+        return summation_kde(x)

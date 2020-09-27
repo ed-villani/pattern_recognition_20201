@@ -1,86 +1,64 @@
-from random import shuffle
+from datetime import datetime
 
 import numpy as np
 from sklearn.model_selection import KFold
 
-from ex9 import Spiral
-
-
-def spread(data):
-    return max(1.06 * np.std(data, axis=0) * data.shape[0] ** (-1 / 5))
-
-
-def kde(data, h):
-    def constant(data, h):
-        N = data.shape[0]
-        n = data.shape[1]
-        return 1 / (N * ((np.sqrt(2 * np.pi) * h) ** n))
-
-    def kde_exp(x, xi):
-        upper = (x - xi) ** 2
-        lower = 2 * h ** 2
-        return np.prod(np.exp(-(upper / lower)))
-
-    def summation_kde(x):
-        return constant(data, h) * sum([kde_exp(x, xi) for xi in data])
-
-    return summation_kde
+from commons.classifiers import get_data_for_classification, bayesian_classifier
+from commons.commons import calculate_accuracy_percentage, save_to_csv
+from commons.pdf import GaussianPDF, GaussianPDFTypes
+from ex9_1 import Spiral
 
 
 def main():
-    spiral = Spiral('data/spiral.txt')
-    data = np.insert(spiral.points, 0, spiral.classification, axis=1)
-    shuffle(data)
-    data = data[:, 1:]
-    classes = data[:, 0]
-
-    kf = KFold(n_splits=10)
+    n_splits = 10
     n_tests = 9
-    h_base = spread(spiral.points)
+    spiral = Spiral()
+    points, classification = spiral.points, spiral.classification
+
+    h_base = GaussianPDF.kde_spread(points)
     step = h_base / (n_tests - 1)
     all_h = [(h_base * 1.5) - (step * i) for i in range(n_tests)]
-    better_h = 0
+    better_h = None
+    better_accuracy = 0
+    accuracies_list = []
+    i = 0
     for h in all_h:
-        hits = []
-        better_hit = np.inf
-        for train_index, test_index in kf.split(data):
-            points_train = spiral.points[train_index]
-            class_train = spiral.classification[train_index]
+        for train_index, test_index in KFold(n_splits=n_splits).split(points):
+            points_train = points[train_index]
+            class_train = classification[train_index]
 
-            points_train_1 = points_train[np.where(class_train == 1)]
-            class_train_1 = class_train[np.where(class_train == 1)]
+            points_test = points[test_index]
+            class_test = classification[test_index]
 
-            points_train_2 = points_train[np.where(class_train == 2)]
-            class_train_2 = class_train[np.where(class_train == 2)]
+            data_classified = get_data_for_classification(class_train, points_train)
 
-            points_test = spiral.points[test_index]
-            class_test = spiral.classification[test_index]
-            hit_bayes = 0
-            total = points_train.shape[0]
-            p1 = points_train_1.shape[0] / total
-            p2 = 1 - p1
-            result = []
-            for index, p in enumerate(points_test):
-                k1 = kde(points_train_1, h)(p)
-                k2 = kde(points_train_2, h)(p)
-                # print(k1, k2, 1 if k1 > k2 else 2, class_test[index])
-                classe_baye = 1 if (k1 * p1) / (k2 * p2) >= 1 else 2
-                result.append(classe_baye)
-                if classe_baye != class_test[index]:
-                    hit_bayes = hit_bayes + 1
+            bayesian_classification = bayesian_classifier(
+                points_test,
+                data_classified,
+                GaussianPDF(GaussianPDFTypes.KDE),
+                h=h
+            )
 
-            if hit_bayes < better_hit:
-                print(f"Better Hit: {hit_bayes}")
-                better = result
-                better_hit = hit_bayes
+            accuracy = calculate_accuracy_percentage(class_test, bayesian_classification)
+            accuracies_list.append([i, round(accuracy, 4), 0.9, h, datetime.now().strftime("%Y/%m/%dT%H:%M:%S")])
 
-            hits.append(hit_bayes)
-            accuracy = np.mean(hits)
-            if accuracy > better_h:
-                best_result = better
-                mejor_h = h
-                print(mejor_h)
-                better_h = accuracy
+            i += 1
+
+            if accuracy > better_accuracy:
+                better_accuracy = accuracy
+                better_h = h
+                print(f'Got a better spread: {better_h}')
+
+                better_points_train = points_train
+                better_class_train = class_train
+                better_points_test = points_test
+                better_class_test = bayesian_classification
+
+                better_points, better_classification = np.concatenate(
+                    (better_points_train, better_points_test)), np.concatenate(
+                    (better_class_train, better_class_test))
+
+    save_to_csv('/Users/eduardovillani/git/pattern_recognition_20201/data/ex_11.csv', accuracies_list)
 
 
 if __name__ == '__main__':

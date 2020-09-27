@@ -1,5 +1,7 @@
 from copy import deepcopy
+
 import numpy as np
+from numpy.random.mtrand import shuffle
 
 
 class Spiral:
@@ -18,6 +20,7 @@ class Spiral:
         del line
         del f
         self._spiral = np.array(spiral)
+        shuffle(self._spiral)
 
     @property
     def data(self):

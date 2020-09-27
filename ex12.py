@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import numpy as np
 
-from ex9 import Spiral, random_colors
+from ex9_1 import Spiral, random_colors
 from commons.pdf import pdf
 
 
