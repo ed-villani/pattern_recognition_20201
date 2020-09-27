@@ -109,14 +109,14 @@ def main():
 #         if better_accuracy > hit:
 #             print(f"Gotta a smaller hit: {hit}")
 #             better_accuracy = hit
-#             # better_points = np.concatenate((spiral.points[train_index], spiral.points[test_index]))
-#             # better_classes = np.concatenate((spiral.classification[train_index], np.array(final_result)))
-#             # better_points = spiral.points[test_index]
+#             # better_points = np.concatenate((spiral.png.points[train_index], spiral.png.points[test_index]))
+#             # better_classes = np.concatenate((spiral.png.classification[train_index], np.array(final_result)))
+#             # better_points = spiral.png.points[test_index]
 #             # better_classes = np.array(final_result)
-#             # better_points_train = spiral.points[train_index]
-#             # better_classes_train = spiral.classification[train_index]
-#             # better_class_test = spiral.classification[test_index]
-#             # better_points_test = spiral.points[test_index]
+#             # better_points_train = spiral.png.points[train_index]
+#             # better_classes_train = spiral.png.classification[train_index]
+#             # better_class_test = spiral.png.classification[test_index]
+#             # better_points_test = spiral.png.points[test_index]
 #         accuracy.append(hit)
 #         i = i + 1
 #     print(f"Mean: {np.mean(accuracy)}")

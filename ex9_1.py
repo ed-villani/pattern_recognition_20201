@@ -7,7 +7,7 @@ from commons.classifiers import get_data_for_classification, fuzzy_class_by_inne
     data_frontier
 from commons.commons import calculate_accuracy_percentage, save_to_csv
 from commons.fkm import FuzzyKMeans
-from commons.pdf import GaussianPDF, GaussianPDFTypes
+from commons.pdf import PDF, PDFTypes
 from commons.plotter import surface_plot, contour_plot, frontier_plot
 from commons.solver import solver
 from commons.spiral import Spiral
@@ -39,7 +39,7 @@ def main():
         bayesian_classification = bayesian_classifier(
             points_test,
             fuzzy_data_classified,
-            GaussianPDF(GaussianPDFTypes.MIXTURE),
+            PDF(PDFTypes.MIXTURE),
             'mix'
         )
         accuracy = calculate_accuracy_percentage(class_test, bayesian_classification)
@@ -65,14 +65,14 @@ def main():
     classifiers = np.array([
         solver(
             grid,
-            GaussianPDF(GaussianPDFTypes.MIXTURE),
+            PDF(PDFTypes.MIXTURE),
             d=d
         ) for index, d in enumerate(better_fuzzy_data)
     ])
 
     surface_plot(grid, grid, classifiers)
     contour_plot(grid, grid, classifiers)
-    frontier = data_frontier(better_fuzzy_data, grid, GaussianPDF(GaussianPDFTypes.MIXTURE))
+    frontier = data_frontier(better_fuzzy_data, grid, PDF(PDFTypes.MIXTURE))
     frontier_plot(better_points, grid, grid, frontier)
 
 

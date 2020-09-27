@@ -1,7 +1,7 @@
 import numpy as np
 from numpy.random.mtrand import normal
 
-from commons.pdf import GaussianPDFTypes, GaussianPDF
+from commons.pdf import PDFTypes, PDF
 from commons.plotter import surface_plot, contour_plot, scatter_plot
 from commons.solver import solver
 
@@ -21,7 +21,7 @@ def main():
     classifiers = np.array([
         solver(
             grid,
-            GaussianPDF(GaussianPDFTypes.TWO_VAR),
+            PDF(PDFTypes.TWO_VAR),
             d=d,
             p=0
         ) for index, d in enumerate(data)

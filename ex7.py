@@ -2,7 +2,7 @@ import numpy as np
 
 from commons.classifiers import get_data_for_classification
 from commons.fkm import FuzzyKMeans
-from commons.pdf import GaussianPDF, GaussianPDFTypes
+from commons.pdf import PDF, PDFTypes
 from commons.plotter import scatter_plot, surface_plot
 from commons.solver import solver
 from commons.spiral import Spiral
@@ -32,7 +32,7 @@ def main():
     classifiers = np.array([
         solver(
             grid,
-            GaussianPDF(GaussianPDFTypes.MULTI_VAR),
+            GaussianPDF(PDFTypes.MULTI_VAR),
             d=d
         ) for index, d in enumerate(data_classified)
     ])

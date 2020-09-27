@@ -3,7 +3,7 @@ from numpy.random.mtrand import normal
 
 from commons.classifiers import simple_classifier, get_data_for_classification, data_frontier
 from commons.commons import join_data
-from commons.pdf import GaussianPDF, GaussianPDFTypes
+from commons.pdf import PDF, PDFTypes
 from commons.plotter import scatter_plot, surface_plot, frontier_plot
 from commons.solver import solver
 
@@ -26,7 +26,7 @@ def main():
     classifiers = np.array([
         solver(
             grid,
-            GaussianPDF(GaussianPDFTypes.TWO_VAR),
+            PDF(PDFTypes.TWO_VAR),
             d=d,
             p=0
         ) for index, d in enumerate(data)
@@ -38,7 +38,7 @@ def main():
 
     data_classified = get_data_for_classification(classes, points)
     scatter_plot(data=data_classified)
-    frontier = data_frontier(data_classified, grid, GaussianPDF(GaussianPDFTypes.TWO_VAR), p=0)
+    frontier = data_frontier(data_classified, grid, PDF(PDFTypes.TWO_VAR), p=0)
     frontier_plot(data, grid, grid, frontier)
 
 

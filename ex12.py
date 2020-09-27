@@ -1,89 +1,61 @@
 import warnings
 
+import numpy as np
 from sklearn import svm
 from sklearn.model_selection import train_test_split
-import matplotlib.pyplot as plt
-import numpy as np
 
-from ex9_1 import Spiral, random_colors
-from commons.pdf import pdf
-
-
-def solver(grid, data):
-    x = grid
-    y = grid
-
-    m = np.zeros((len(x), len(y)))
-
-    K = np.cov(np.array(data).T)
-    mean = np.mean(np.array(data).T, axis=1)
-
-    for i, x_i in enumerate(x):
-        for j, y_i in enumerate(y):
-            m[i][j] = pdf(
-                n=data.shape[1],
-                K=K,
-                x=(x_i, y_i),
-                m=mean
-            )
-    return m
-
-
-# def data_frontier(data, grid):
-#     x = grid
-#     y = grid
-#
-#     m = np.zeros((len(x), len(y)))
-#     solution = [solver(grid, datum) for datum in data]
-#     for i, x_i in enumerate(x):
-#         for j, y_i in enumerate(y):
-#             values_list = [s[i][j] for s in solution]
-#             m[i][j] = values_list.index(max(values_list))
-#     return m
+from commons.classifiers import get_data_for_classification, data_frontier, fuzzy_class_by_inner_class
+from commons.commons import calculate_accuracy_percentage
+from commons.fkm import FuzzyKMeans
+from commons.pdf import PDF, PDFTypes
+from commons.plotter import scatter_plot, surface_plot, frontier_plot, contour_plot
+from commons.solver import solver
+from commons.spiral import Spiral
 
 
 def main():
     warnings.filterwarnings("ignore", category=DeprecationWarning)
-    spiral = Spiral('data/spiral.txt')
+    K = 30
+    train_size = 0.9
+    spiral = Spiral()
+    grid = np.arange(-2, 2, 0.02)
+    ylim = (-1.1, 1.1)
+    xlim = (-1.1, 1.1)
+    points, classification = spiral.points, spiral.classification
 
-    X_train, X_test, y_train, y_test = train_test_split(spiral.data, spiral.classification, test_size=0.1,
-                                                        random_state=1)
-    colors = random_colors(3)
+    X_train, X_test, y_train, y_test = train_test_split(points, classification, train_size=train_size)
 
-    fig, ax = plt.subplots()
-    spiral_1 = np.where(X_train.T[-1] == 1)
-    spiral_2 = np.where(X_train.T[-1] == 2)
-    ax.scatter(X_train[spiral_1].T[1], X_train[spiral_1].T[2], alpha=0.3, edgecolors='none', c=colors[0])
-    ax.scatter(X_train[spiral_2].T[1], X_train[spiral_2].T[2], alpha=0.3, edgecolors='none', c=colors[1])
-    plt.show()
+    data_classified = get_data_for_classification(y_train, X_train)
+    scatter_plot(data=data_classified)
 
-    C = 0.75
-    svm_linear = svm.SVC(kernel='rbf', C=C * 10 ** 3)
+    C = 15
+    svm_linear = svm.SVC(kernel='rbf', C=C, gamma=1 / (np.std(X_train)))
     svm_linear.fit(X_train, y_train)
+    scatter_plot(data=data_classified, support_vectors=svm_linear.support_vectors_)
 
-    fig, ax = plt.subplots()
-    ax.scatter(X_train[spiral_1].T[1], X_train[spiral_1].T[2], alpha=0.3, edgecolors='none', c=colors[0])
-    ax.scatter(X_train[spiral_2].T[1], X_train[spiral_2].T[2], alpha=0.3, edgecolors='none', c=colors[1])
-    ax.scatter(X_train[svm_linear.support_].T[1], X_train[svm_linear.support_].T[2], alpha=0.5, edgecolors='none',
-               c='black')
-    plt.show()
-    fig, ax = plt.subplots()
-    predicted = svm_linear.predict(X_test)
-    hit = 0
-    for x, y in zip(predicted, y_test):
-        if x != y:
-            hit += 1
-    print(f"C: {C * 10 ** 3}\nFails: {hit}")
+    classification = svm_linear.predict(X_test)
+    calculate_accuracy_percentage(y_test, classification)
 
-    grid = np.arange(-7, 7, 14/100)
-    # frontier = data_frontier([X_train[spiral_1][:, 1:3].T, X_train[spiral_2][:, 1:3].T], grid)
-    random_data = [X_train[spiral_1][:, 1:3].T, X_train[spiral_2][:, 1:3].T]
-    fig, ax = plt.subplots()
-    for data in random_data:
-        X, Y = np.meshgrid(grid, grid)
-        CS = ax.contour(Y, X, solver(grid, data.T))
-    fig.colorbar(CS, shrink=0.8, extend='both')
-    plt.show()
+    data_classified = get_data_for_classification(np.concatenate((y_train, classification)),
+                                                  np.concatenate((X_train, X_test)))
+    scatter_plot(data=data_classified)
+
+    fkm = [FuzzyKMeans(c.T, int(K / 2), 1e-19).fkm() for c in data_classified]
+
+    fuzzy_data_classified = fuzzy_class_by_inner_class(fkm, data_classified)
+
+    classifiers = np.array([
+        solver(
+            grid,
+            PDF(PDFTypes.MIXTURE),
+            d=d
+        ) for index, d in enumerate(fuzzy_data_classified)
+    ])
+
+    surface_plot(grid, grid, classifiers)
+    contour_plot(grid, grid, classifiers, xlim=xlim, ylim=ylim)
+    frontier = data_frontier(fuzzy_data_classified, grid, PDF(PDFTypes.MIXTURE), solution=classifiers)
+    frontier_plot(data_classified, grid, grid, frontier)
 
 
 if __name__ == '__main__':

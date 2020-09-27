@@ -23,7 +23,7 @@ def frontier_plot(data, x, y, frontier, **kwargs):
     plt.show()
 
 
-def contour_plot(x, y, z, color_bar=False):
+def contour_plot(x, y, z, color_bar=False, **kwargs):
     fig, ax = plt.subplots()
     CS = None
     for d in z:
@@ -32,6 +32,10 @@ def contour_plot(x, y, z, color_bar=False):
         ax.clabel(CS, inline=1, fontsize=10)
     if color_bar:
         fig.colorbar(CS, shrink=0.8, extend='both')
+    if kwargs.get('xlim') is not None:
+        plt.xlim(*kwargs['xlim'])
+    if kwargs.get('ylim') is not None:
+        plt.ylim(*kwargs['ylim'])
     plt.show()
 
 
@@ -45,6 +49,9 @@ def scatter_plot(data, **kwargs):
         ax.legend()
         ax.grid(True)
 
+    if kwargs.get('support_vectors') is not None:
+        for c in kwargs['support_vectors']:
+            ax.scatter(c[0], c[1], edgecolors='none', c='green')
     if kwargs.get('centers') is not None:
         for c in kwargs['centers']:
             ax.scatter(c[0], c[1], edgecolors='none', c='black')

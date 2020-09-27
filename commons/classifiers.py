@@ -2,7 +2,7 @@ import warnings
 
 import numpy as np
 
-from commons.pdf import GaussianPDF, GaussianPDFTypes
+from commons.pdf import PDF, PDFTypes
 from commons.solver import solver
 
 
@@ -44,7 +44,7 @@ def bayesian_classifier(points, classes, pdf, type='simple', **kwargs):
 def simple_classifier(points, classes):
     c = [
         np.argmax([
-            GaussianPDF(GaussianPDFTypes.TWO_VAR)(
+            GaussianPDF(PDFTypes.TWO_VAR)(
                 x=p,
                 d=d,
                 p=0
@@ -72,12 +72,13 @@ def fuzzy_class_by_inner_class(fkm, data):
     return aux
 
 
-def data_frontier(data, grid, pdf, **kwargs):
+def data_frontier(data, grid, pdf, solution=None, **kwargs):
     x = grid
     y = grid
 
     m = np.zeros((len(x), len(y)))
-    solution = [solver(grid, pdf, d=d, **kwargs) for d in data]
+    if solution is None:
+        solution = [solver(grid, pdf, d=d, **kwargs) for d in data]
     for i, x_i in enumerate(x):
         for j, y_i in enumerate(y):
             m[i][j] = np.argmax([s[i][j] for s in solution])

@@ -7,23 +7,23 @@ from numpy.linalg import pinv, det
 
 
 @dataclass
-class GaussianPDFTypes:
+class PDFTypes:
     MULTI_VAR = 'multi-var'
     TWO_VAR = 'two-var'
     MIXTURE = 'mixture'
     KDE = 'kde'
 
 
-class GaussianPDF:
+class PDF:
     def __new__(cls, type='multi-var'):
-        if type == GaussianPDFTypes.MULTI_VAR:
-            return GaussianPDF.pdf
-        elif type == GaussianPDFTypes.TWO_VAR:
-            return GaussianPDF.pdf_2_var
-        elif type == GaussianPDFTypes.MIXTURE:
-            return GaussianPDF.gaussian_mixture
+        if type == PDFTypes.MULTI_VAR:
+            return PDF.pdf
+        elif type == PDFTypes.TWO_VAR:
+            return PDF.pdf_2_var
+        elif type == PDFTypes.MIXTURE:
+            return PDF.gaussian_mixture
         elif type == 'kde':
-            return GaussianPDF.kde
+            return PDF.kde
         else:
             raise Exception
 
@@ -55,15 +55,17 @@ class GaussianPDF:
 
     @staticmethod
     def gaussian_mixture(x, d):
-        return sum([GaussianPDF.pdf(x, data) for data in d])
+        return sum([PDF.pdf(x, data) for data in d])
 
     @staticmethod
     def kde_spread(data):
         return max(1.06 * np.std(data, axis=0) * data.shape[0] ** (-1 / 5))
 
     @staticmethod
-    def kde(x, d, h):
+    def kde(x, d, h=None):
         warnings.filterwarnings("ignore", category=RuntimeWarning)
+        if h is None:
+            h = PDF.kde_spread(d)
 
         def constant(data, h):
             N = data.shape[0]
@@ -79,3 +81,18 @@ class GaussianPDF:
             return constant(d, h) * sum([kde_exp(p, xi) for xi in d.T])
 
         return summation_kde(x)
+
+    # @staticmethod
+    # def generate_kde_pdf(x, d, h=None):
+    #     total_samples = d.shape[0]
+    #     dimensions = d.shape[1]
+    #     if h is None:
+    #         h = max(1.06 * d.std() * total_samples ** (-1 / 5), 0.00001)
+    #     multiplier = 1 / (total_samples * (((2 * np.pi) * (1 / 2) * h) * dimensions))
+    #
+    #     def pdf(*x):
+    #         x_array = np.array(x)
+    #         all_terms = np.e * -(((x_array - d.T) * 2) / (2 * h ** 2))
+    #         return multiplier * all_terms.prod(axis=1).sum()
+    #
+    #     return pdf(x)

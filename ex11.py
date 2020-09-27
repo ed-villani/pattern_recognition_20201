@@ -5,7 +5,7 @@ from sklearn.model_selection import KFold
 
 from commons.classifiers import get_data_for_classification, bayesian_classifier
 from commons.commons import calculate_accuracy_percentage, save_to_csv
-from commons.pdf import GaussianPDF, GaussianPDFTypes
+from commons.pdf import PDF, PDFTypes
 from ex9_1 import Spiral
 
 
@@ -15,7 +15,7 @@ def main():
     spiral = Spiral()
     points, classification = spiral.points, spiral.classification
 
-    h_base = GaussianPDF.kde_spread(points)
+    h_base = PDF.kde_spread(points)
     step = h_base / (n_tests - 1)
     all_h = [(h_base * 1.5) - (step * i) for i in range(n_tests)]
     better_h = None
@@ -35,7 +35,7 @@ def main():
             bayesian_classification = bayesian_classifier(
                 points_test,
                 data_classified,
-                GaussianPDF(GaussianPDFTypes.KDE),
+                GaussianPDF(PDFTypes.KDE),
                 h=h
             )
 

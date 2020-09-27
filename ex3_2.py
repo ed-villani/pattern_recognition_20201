@@ -3,7 +3,7 @@ from sklearn.model_selection import train_test_split
 
 from commons.classifiers import get_data_for_classification, bayesian_classifier, data_frontier
 from commons.commons import gen_data, join_data, calculate_accuracy_percentage, join_classification
-from commons.pdf import GaussianPDF, GaussianPDFTypes
+from commons.pdf import PDF, PDFTypes
 from commons.plotter import scatter_plot, frontier_plot
 
 
@@ -33,13 +33,13 @@ def main():
     scatter_plot(data=X_train_per_class, ylim=ylim, xlim=xlim)
     scatter_plot(data=get_data_for_classification(y_test, X_test), ylim=ylim, xlim=xlim)
     classification = bayesian_classifier(
-        X_test, X_train_per_class, GaussianPDF(GaussianPDFTypes.MULTI_VAR)
+        X_test, X_train_per_class, PDF(PDFTypes.MULTI_VAR)
     )
     calculate_accuracy_percentage(y_test, classification)
     data_classified = get_data_for_classification(*join_classification(X_train, y_train, X_test, classification))
     scatter_plot(data=data_classified, ylim=ylim, xlim=xlim)
 
-    frontier = data_frontier(data_classified, grid, GaussianPDF(GaussianPDFTypes.MULTI_VAR))
+    frontier = data_frontier(data_classified, grid, PDF(PDFTypes.MULTI_VAR))
     frontier_plot(data_classified, grid, grid, frontier, ylim=ylim, xlim=xlim)
 
 
