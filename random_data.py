@@ -14,9 +14,10 @@ class RandomData:
         self.grid_x = grid
         self.grid_y = grid
 
-        total = int(self._n * (1 - split)) + 1
+        # total = int(self._n * (1 - split)) + 1
+        total = self._n
         self.random_data = array([normal(size=total) * self._s + self._mean[i] for i in range(2)])
-        self.traning_data = array([normal(size=(self._n - total)) * self._s + self._mean[i] for i in range(2)])
+        # self.traning_data = array([normal(size=(self._n - total)) * self._s + self._mean[i] for i in range(2)])
         self.classifier = 0
 
     @property
@@ -82,7 +83,7 @@ class RandomDataPlotter:
             CS = ax.plot_surface(
                 X,
                 Y,
-                data.solver,
+                data.solver(),
                 rstride=1,
                 cstride=1,
                 cmap='viridis',

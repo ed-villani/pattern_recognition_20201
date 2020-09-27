@@ -1,7 +1,6 @@
-from math import sqrt
 from random import sample
 
-from numpy import mean, std, array, cov, prod, concatenate
+from numpy import mean, array, cov, concatenate
 
 from ex3_1_new import pdf_2
 

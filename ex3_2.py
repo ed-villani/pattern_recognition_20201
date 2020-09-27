@@ -41,7 +41,6 @@ def main():
     c2_training = concatenate((c_2_training, c_3_training)).T
     c2_random = concatenate((c_2_random, c_3_random)).T
 
-
     data_con = concatenate((c1_random.T, c2_random.T))
     pdf_c1 = [
         pdf_2(2, cov(c1_training), d, mean(c1_training, axis=1)) for d in data_con
@@ -64,7 +63,7 @@ def main():
     final_c1 = array(final_c1)
     final_c2 = array(final_c2)
 
-    print(f"Erro: {((final_c1.shape[0] - c1_random.T.shape[0])/(c1_random.T.shape[0]*2))*100}%")
+    print(f"Erro: {((final_c1.shape[0] - c1_random.T.shape[0]) / (c1_random.T.shape[0] * 2)) * 100}%")
 
     scatter_plot([c1_training, c2_training]
                  , ['C1', 'C2'])
@@ -86,6 +85,7 @@ def main():
 
     scatter_plot([c1_all, c2_all]
                  , ['C1', 'C2'], frontier)
+
 
 if __name__ == '__main__':
     main()

@@ -27,7 +27,7 @@ def solver(grid, data):
 
     for i, x_i in enumerate(x):
         for j, y_i in enumerate(y):
-            m[i][j] = pdf_2(2, cov(data), array([x_i, y_i]), mean(data, axis=1))
+            m[i][j] = pdf_2(2, cov(data.T), array([x_i, y_i]), mean(data, axis=0))
     return m
 
 

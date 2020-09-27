@@ -18,7 +18,7 @@ def pdf(n, K, x, m):
 
 def main():
     np.warnings.filterwarnings('error', category=np.VisibleDeprecationWarning)
-    datContent = [i.strip().split() for i in open("cancer.dat").readlines()]
+    datContent = [i.strip().split() for i in open("data/cancer.dat").readlines()]
     data, classes = [], []
     for index, dat in enumerate(datContent):
         if index == 0:

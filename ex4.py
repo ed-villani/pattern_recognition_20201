@@ -6,10 +6,9 @@ from numpy import mean, array, cov, concatenate
 from ex3_1_new import pdf_2
 
 
-
 def main():
     percentage_training = 0.2
-    datContent = [i.strip().split() for i in open("heart.dat").readlines()]
+    datContent = [i.strip().split() for i in open("data/heart.dat").readlines()]
     for dat in datContent:
         for index, i in enumerate(dat):
             dat[index] = float(i)
@@ -65,10 +64,10 @@ def main():
     final_c1 = array(final_c1)
     final_c2 = array(final_c2)
 
-
     print(f"Expected C1: {c1_random.T.shape[1]} - Result C1: {final_c1.shape[0]}")
     print(f"Expected C2: {c2_random.T.shape[1]} - Result C2: {final_c2.shape[0]}")
-    print(f"Error C1: {abs(((final_c1.shape[0] - c1_random.T.shape[1]) / (c1_random.T.shape[1] + c2_random.T.shape[1])) * 100)}%\n")
+    print(
+        f"Error C1: {abs(((final_c1.shape[0] - c1_random.T.shape[1]) / (c1_random.T.shape[1] + c2_random.T.shape[1])) * 100)}%\n")
 
 
 def iterar():
