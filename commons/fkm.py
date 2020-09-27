@@ -32,13 +32,21 @@ class FuzzyKMeans:
         # Recalcular centros
         number_points_per_class = np.sum(membership_m, axis=0)
         ## Calcular G
-        G = np.expand_dims(number_points_per_class, 1)\
+        G = np.expand_dims(number_points_per_class, 1) \
             .repeat((data.T @ membership_m).T.shape[-1], 1)
         return (data.T @ membership_m).T / G
+
+    @staticmethod
+    def normalize_membership_matrix(m):
+        return np.array([
+            np.argmax(p) for p in m
+        ])
 
     def fkm(self):
         # Inicia K centros aleatoriamente
         c = self.init_cluster_center(self._data, self._k)
+        membership_m = None
+        i = None
         aux_J = None
         for i in range(self.MAX_ITERATIONS):
             # Calcula a Dist
@@ -56,6 +64,3 @@ class FuzzyKMeans:
             aux_J = J.copy()
 
         return membership_m, c, i
-
-
-

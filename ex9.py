@@ -8,7 +8,7 @@ from numpy.linalg import pinv, det
 from sklearn.model_selection import KFold
 
 from ex6 import scatter_plot
-from fkm import FuzzyKMeans
+from commons.fkm import FuzzyKMeans
 
 
 class Spiral:

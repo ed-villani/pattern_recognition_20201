@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from ex3_1 import pdf_2
-from fkm import FuzzyKMeans
+from commons.fkm import FuzzyKMeans
 
 
 class Spiral:

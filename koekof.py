@@ -1,7 +1,7 @@
 from scipy.spatial.distance import cdist
 import numpy as np
 
-from fkm import FuzzyKMeans
+from commons.fkm import FuzzyKMeans
 
 
 def main():

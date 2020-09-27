@@ -4,7 +4,7 @@ from numpy.linalg import pinv, det
 from numpy.random.mtrand import shuffle
 from sklearn.model_selection import KFold
 
-from fkm import FuzzyKMeans
+from commons.fkm import FuzzyKMeans
 
 
 def pdf(n, K, x, m):

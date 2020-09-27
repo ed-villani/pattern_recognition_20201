@@ -42,10 +42,15 @@ def scatter_plot(data, **kwargs):
         ax.legend()
         ax.grid(True)
 
+    if kwargs.get('centers') is not None:
+        for c in kwargs['centers']:
+            ax.scatter(c[0], c[1], edgecolors='none', c='black')
     if kwargs.get('xlim') is not None:
         plt.xlim(*kwargs['xlim'])
     if kwargs.get('ylim') is not None:
         plt.ylim(*kwargs['ylim'])
+    if kwargs.get('title') is not None:
+        plt.title(kwargs['title'])
 
     plt.show()
 
