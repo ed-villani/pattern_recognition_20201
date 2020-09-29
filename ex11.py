@@ -6,7 +6,7 @@ from sklearn.model_selection import KFold
 from commons.classifiers import get_data_for_classification, bayesian_classifier, data_frontier
 from commons.commons import calculate_accuracy_percentage, save_to_csv
 from commons.pdf import PDF, PDFTypes
-from commons.plotter import frontier_plot
+from commons.plotter import frontier_plot, surface_plot, contour_plot
 from commons.solver import solver
 from ex9_1 import Spiral
 
@@ -19,7 +19,7 @@ def main():
 
     h_base = PDF.kde_spread(points)
     step = h_base / (n_tests - 1)
-    all_h = [h_base]
+    all_h = [(h_base * 1.5) - (step * i) for i in range(n_tests)]
     better_h = None
     better_accuracy = 0
     accuracies_list = []
@@ -72,6 +72,12 @@ def main():
             h=better_h
         ) for index, d in enumerate(data_classified)
     ])
+
+    surface_plot(grid, grid, [classifiers[0]])
+    contour_plot(grid, grid, [classifiers[0]])
+
+    surface_plot(grid, grid, [classifiers[1]])
+    contour_plot(grid, grid, [classifiers[1]])
 
     frontier = data_frontier(data_classified, grid, PDF(PDFTypes.MIXTURE), solution=classifiers)
     frontier_plot(data_classified, grid, grid, frontier)
