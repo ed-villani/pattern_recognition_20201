@@ -30,14 +30,9 @@ def bayesian_classifier(points, classes, pdf, type='simple', **kwargs):
                     **kwargs
                 )
             )
+    pdfs_values = np.array(pdfs_values).reshape(len(pdfs_values), len(points)).T
 
-    classification = []
-    for index in range(len(points)):
-        k = (pdfs_values[0][index] * n_per_classes[0]) / (pdfs_values[1][index] * n_per_classes[1])
-        if k > 1:
-            classification.append(0)
-        else:
-            classification.append(1)
+    classification = [np.argmax(values * n_per_classes) for values in pdfs_values]
     return np.array(classification)
 
 
@@ -53,10 +48,15 @@ def simple_classifier(points, classes):
     return np.array(c)
 
 
-def get_data_for_classification(classification, data):
+def get_data_for_classification(classification, data, n_classes=None):
     warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
+    if n_classes is not None:
+        values = enumerate(list(range(n_classes)))
+    else:
+        values = enumerate(set(classification))
+
     return [
-        data[np.where(classification == index)].T for index, c in enumerate(set(classification))
+            data[np.where(classification == index)].T for index, c in enumerate(list(values))
     ]
 
 

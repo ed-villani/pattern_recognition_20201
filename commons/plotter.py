@@ -1,9 +1,31 @@
 import matplotlib.pyplot as plt
 import numpy as np
-
+import seaborn as sn
+import pandas as pd
 import logging
 
+
 logging.getLogger().setLevel(logging.CRITICAL)
+
+
+def confusion_matrix(confusion_matriz, font_scale=0.5, inner_font_size=8):
+    dpi = 200
+    plt.figure(figsize=(800 / dpi, 800 / dpi), dpi=dpi)
+    df_cm = pd.DataFrame(confusion_matriz)
+    # plt.figure(figsize=(10,7))
+    sn.set(font_scale=font_scale)  # for label size
+    sn.heatmap(df_cm, annot=True, annot_kws={"size": inner_font_size})  # font size
+    plt.show()
+
+
+# def print_figs(data):
+#     x = 1
+#     y = 10
+#     fig = plt.figure(figsize=(x, y))
+#     for i in range(y*x):
+#         ax = fig.add_subplot(x, y, i + 1)
+#         ax.imshow(data.images[i], cmap=plt.cm.bone)
+#     plt.show()
 
 
 def frontier_plot(data, x, y, frontier, **kwargs):

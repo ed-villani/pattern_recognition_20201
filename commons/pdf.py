@@ -59,7 +59,10 @@ class PDF:
 
     @staticmethod
     def kde_spread(data):
-        return max(1.06 * np.std(data, axis=0) * data.shape[0] ** (-1 / 5))
+        try:
+            return max(1.06 * np.std(data, axis=0) * data.shape[0] ** (-1 / 5))
+        except ValueError:
+            i = 0
 
     @staticmethod
     def kde(x, d, h=None):
@@ -70,7 +73,11 @@ class PDF:
         def constant(data, h):
             N = data.shape[0]
             n = data.shape[1]
-            return 1 / (n * (((2 * np.pi) * (1 / 2) * h) ** N))
+            try:
+                return 1 / (n * (((2 * np.pi) * (1 / 2) * h) ** N))
+            except ZeroDivisionError:
+                # print("ZeroDivisionError on KDE constant, setting value as 0")
+                return 0
 
         def kde_exp(p, d):
             upper = (p - d.T) ** 2
