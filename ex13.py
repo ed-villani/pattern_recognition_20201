@@ -15,10 +15,8 @@ def main():
     ssl._create_default_https_context = ssl._create_unverified_context
 
     faces = datasets.fetch_olivetti_faces()
-    # print_figs(faces)
     points, classification = faces.data, faces.target
-    total_n_components = 21
-    n_components= 21
+    n_components = 21
     h = 0.6
     train_size = 0.5
 
