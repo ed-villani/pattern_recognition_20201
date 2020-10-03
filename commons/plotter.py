@@ -4,14 +4,13 @@ import seaborn as sn
 import pandas as pd
 import logging
 
-
 logging.getLogger().setLevel(logging.CRITICAL)
 
 
-def confusion_matrix(confusion_matriz, font_scale=0.5, inner_font_size=8):
+def confusion_matrix(confusion_matrix, font_scale=0.5, inner_font_size=8):
     dpi = 200
     plt.figure(figsize=(800 / dpi, 800 / dpi), dpi=dpi)
-    df_cm = pd.DataFrame(confusion_matriz)
+    df_cm = pd.DataFrame(confusion_matrix)
     # plt.figure(figsize=(10,7))
     sn.set(font_scale=font_scale)  # for label size
     sn.heatmap(df_cm, annot=True, annot_kws={"size": inner_font_size})  # font size
@@ -58,6 +57,32 @@ def contour_plot(x, y, z, color_bar=False, **kwargs):
         plt.xlim(*kwargs['xlim'])
     if kwargs.get('ylim') is not None:
         plt.ylim(*kwargs['ylim'])
+    plt.show()
+
+
+def line_plot(x, y):
+    def set_labels():
+        for x_i, y_i in zip(x, y):
+            label = "{:.2f}".format(y_i)
+
+            plt.annotate(label,  # this is the text
+                         (x_i, y_i),  # this is the point to label
+                         textcoords="offset points",  # how to position the text
+                         xytext=(0, 10),  # distance from text to points (x,y)
+                         ha='left')  # horizontal alignment can be left, right or center
+    fig = plt.figure()
+    ax = plt.axes()
+
+    ax.plot(x, y, marker='o')
+    set_labels()
+    plt.yscale(value="log")
+    plt.show()
+
+    fig = plt.figure()
+    ax = plt.axes()
+
+    ax.plot(x, y, marker='o')
+    set_labels()
     plt.show()
 
 
