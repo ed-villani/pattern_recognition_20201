@@ -1,8 +1,10 @@
-from random import choice
+import ssl
+from random import choice, randint
 
 import numpy as np
 import pandas as pd
 from numpy.random.mtrand import shuffle, normal
+from sklearn import datasets
 
 
 def random_colors(number_of_colors):
@@ -68,3 +70,9 @@ def calculate_accuracy_percentage(y_test, classification):
     accuracy = 1 - (hit / len(classification))
     print(f'We got an accuracy of {round(accuracy * 100, 2)}%')
     return accuracy
+
+
+def get_random_face():
+    ssl._create_default_https_context = ssl._create_unverified_context
+    faces = datasets.fetch_olivetti_faces().data
+    return np.reshape(faces[randint(0, len(faces) - 1)], (64, 64))

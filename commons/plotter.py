@@ -17,14 +17,12 @@ def confusion_matrix(confusion_matrix, font_scale=0.5, inner_font_size=8):
     plt.show()
 
 
-# def print_figs(data):
-#     x = 1
-#     y = 10
-#     fig = plt.figure(figsize=(x, y))
-#     for i in range(y*x):
-#         ax = fig.add_subplot(x, y, i + 1)
-#         ax.imshow(data.images[i], cmap=plt.cm.bone)
-#     plt.show()
+def print_figs(data, **kwargs):
+    fig, ax = plt.subplots()
+    ax.imshow(data, cmap=plt.cm.bone)
+    if kwargs.get('title') is not None:
+        plt.title(kwargs['title'])
+    plt.show()
 
 
 def frontier_plot(data, x, y, frontier, **kwargs):
