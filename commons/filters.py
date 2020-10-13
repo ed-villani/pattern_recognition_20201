@@ -1,3 +1,4 @@
+from copy import deepcopy
 from dataclasses import dataclass
 
 import numpy as np
@@ -56,11 +57,15 @@ class Filters:
 
     @staticmethod
     def max_polling(img, px, py):
-        x, y = img.shape
-        for _ in range(x % px):
-            img = np.vstack((img, np.zeros((img.shape[1]))))
-        for _ in range(y % py):
-            img = np.insert(img, img.shape[1], np.zeros(img.shape[0]), 1)
-        x, y = tuple([int(shape / divisor) for shape, divisor in zip(img.shape, [px, py])])
-        new_image = [np.max(Filters.get_img_portion(img, i, j, px)) for i in range(y) for j in range(x)]
+        aux_img = deepcopy(img)
+        x, y = aux_img.shape
+        if x % px:
+            for _ in range(px - (x % px)):
+                aux_img = np.vstack((aux_img, np.full((aux_img.shape[1]), -np.inf)))
+        if y % py:
+            for _ in range(px - (y % py)):
+                aux_img = np.insert(aux_img, aux_img.shape[1], np.full(aux_img.shape[0], -np.inf), 1)
+
+        x, y = tuple([int(shape / divisor) for shape, divisor in zip(aux_img.shape, [px, py])])
+        new_image = [np.max(Filters.get_img_portion(aux_img, i * px, j * py, px)) for i in range(y) for j in range(x)]
         return np.reshape(new_image, (x, y))
