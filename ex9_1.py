@@ -72,7 +72,7 @@ def main():
 
     surface_plot(grid, grid, classifiers)
     contour_plot(grid, grid, classifiers)
-    frontier = data_frontier(better_fuzzy_data, grid, PDF(PDFTypes.MIXTURE))
+    frontier = data_frontier(better_fuzzy_data, grid, PDF(PDFTypes.MIXTURE), solution=classifiers)
     frontier_plot(better_points, grid, grid, frontier)
 
 

@@ -19,19 +19,22 @@ def layer(data, conv_filter):
 
 def cnn(data, filter_list):
     cnn_list = np.array([layer(data, fi) for fi in filter_list])
-    return np.reshape(cnn_list, (1, cnn_list.shape[0] * cnn_list.shape[2]))
+    x = np.reshape(cnn_list, (1, cnn_list.shape[0] * cnn_list.shape[2]))
+
+    # print_figs(np.reshape(x, (16, 4)))
+    return x
 
 
 def main():
     data, classification = XAndC()
     test_imgs = -1
-    for d in data:
-        print_figs(np.reshape(d, (9, 9)))
+    # for d in data:
+    #     print_figs(np.reshape(d, (9, 9)))
 
     filter_list = XAndC.filters()
 
-    for f in filter_list:
-        print_figs(f)
+    # for f in filter_list:
+    #     print_figs(f)
 
     data = [cnn(np.reshape(img, (9, 9)), filter_list) for img in data]
     data = np.reshape(np.array(data), (np.array(data).shape[0], np.array(data).shape[2]))

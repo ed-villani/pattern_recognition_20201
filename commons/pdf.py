@@ -1,4 +1,5 @@
 import warnings
+from _decimal import InvalidOperation
 from dataclasses import dataclass
 from decimal import Decimal
 
@@ -47,10 +48,19 @@ class PDF:
             return Decimal(det(K * multiplier)) / Decimal(divider)
 
         K = np.cov(d)
+        from copy import deepcopy
+        d_aux = deepcopy(d)
         m = np.mean(d, axis=1)
         n = K.shape[0]
-        d = (1 / np.sqrt(Decimal(((2 * np.pi) ** n)) * calc_det()))
-        e = Decimal(np.exp(-(0.5 * ((x - m) @ pinv(K)) @ (x - m))))
+        try:
+            d = (1 / np.sqrt(Decimal(((2 * np.pi) ** n)) * calc_det()))
+        except InvalidOperation:
+            d = (1 / np.sqrt(Decimal(((2 * np.pi) ** n)) * np.abs(calc_det())))
+        try:
+            e = Decimal(np.exp(-(0.5 * ((x - m) @ pinv(K)) @ (x - m))))
+        except Exception:
+            return 0
+
         return float(d * e)
 
     @staticmethod

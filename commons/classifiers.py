@@ -23,13 +23,16 @@ def bayesian_classifier(points, classes, pdf, type='simple', **kwargs):
     for index, c in enumerate(classes):
         pdfs_values.append([])
         for p in points:
-            pdfs_values[index].append(
-                pdf(
-                    x=p,
-                    d=c,
-                    **kwargs
-                )
+            try:
+                pdfs_values[index].append(
+                    pdf(
+                        x=p,
+                        d=c,
+                        **kwargs
+                    )
             )
+            except Exception:
+                i=0
     pdfs_values = np.array(pdfs_values).reshape(len(pdfs_values), len(points)).T
 
     classification = [np.argmax(values * n_per_classes) for values in pdfs_values]
